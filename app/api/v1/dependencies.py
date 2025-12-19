@@ -9,6 +9,8 @@ from app.infrastructure.persistence.todo.todo_repository import SqlAlchemyTodoRe
 from app.application.todo.services.todo_service import TodoService
 from app.core.todo.exceptions import TodoNotFoundError, TodoValidationError
 
+from loguru import logger
+
 
 async def get_db_session() -> AsyncGenerator[AsyncSession, None]:
     """Dependency для получения database session с автоматическим commit/rollback и закрытием сессии."""
@@ -40,8 +42,6 @@ async def get_todo_service(repo: SqlAlchemyTodoRepository = Depends(get_todo_rep
 
 def todo_not_found_handler(request: Request, exc: TodoNotFoundError) -> NoReturn:
     """Handler для TodoNotFoundError."""
-    from loguru import logger
-
     logger.warning(f"Todo not found: {exc.todo_id} | path: {request.url.path}")
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
@@ -51,8 +51,6 @@ def todo_not_found_handler(request: Request, exc: TodoNotFoundError) -> NoReturn
 
 def todo_validation_error_handler(request: Request, exc: TodoValidationError) -> NoReturn:
     """Handler для TodoValidationError."""
-    from loguru import logger
-
     logger.warning(f"Todo validation error: {str(exc)} | path: {request.url.path}")
     raise HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
@@ -62,8 +60,6 @@ def todo_validation_error_handler(request: Request, exc: TodoValidationError) ->
 
 async def pydantic_validation_error_handler(request: Request, exc: ValidationError) -> JSONResponse:
     """Handler для Pydantic ValidationError с красивым форматированием."""
-    from loguru import logger
-
     errors = []
     for error in exc.errors():
         errors.append({
