@@ -4,10 +4,13 @@ from pydantic import BaseModel, Field, field_validator, model_validator
 from uuid import UUID
 from datetime import datetime
 
+TITLE_MAX_LENGTH = 200
+DESCRIPTION_MAX_LENGTH = 1000
+
 
 class TodoCreateDTO(BaseModel):
-    title: Annotated[str, Field()]
-    description: Annotated[str | None, Field(default=None)]
+    title: Annotated[str, Field(max_length=TITLE_MAX_LENGTH)]
+    description: Annotated[str | None, Field(default=None, max_length=DESCRIPTION_MAX_LENGTH)]
 
     @field_validator("title", "description", mode="before")
     @classmethod
@@ -20,8 +23,8 @@ class TodoCreateDTO(BaseModel):
 
 
 class TodoUpdateDTO(BaseModel):
-    title: Annotated[str | None, Field(default=None)]
-    description: Annotated[str | None, Field(default=None)]
+    title: Annotated[str | None, Field(default=None, max_length=TITLE_MAX_LENGTH)]
+    description: Annotated[str | None, Field(default=None, max_length=DESCRIPTION_MAX_LENGTH)]
 
     @field_validator("title", "description", mode="before")
     @classmethod
