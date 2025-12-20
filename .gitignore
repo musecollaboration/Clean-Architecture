@@ -50,6 +50,10 @@ instance/
 *.log
 logs/
 
+# Coverage reports
+.coverage
+htmlcov/
+
 # OS
 .DS_Store
 Thumbs.db

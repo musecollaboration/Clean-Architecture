@@ -220,8 +220,58 @@ poetry run alembic downgrade -1
 
 ## Тестирование
 
+Проект включает полный набор тестов на трёх уровнях: unit, integration и e2e.
+
+### Структура тестов
+
+```
+tests/
+├── unit/                      # Unit тесты (изолированные, быстрые)
+│   ├── test_todo_entity.py   # Тесты доменной логики
+│   ├── test_todo_dto.py      # Тесты DTO моделей
+│   └── test_todo_service.py  # Тесты бизнес-логики
+├── integration/               # Integration тесты (с БД)
+│   └── test_todo_repository.py
+└── e2e/                       # End-to-end тесты (полный API)
+    └── test_todo_api.py
+```
+
+### Запуск тестов
+
 ```bash
+# Все тесты
 poetry run pytest
+
+# Только unit тесты (быстрые)
+poetry run pytest tests/unit/ -v
+
+# Integration тесты
+poetry run pytest tests/integration/ -v
+
+# E2E тесты
+poetry run pytest tests/e2e/ -v
+
+# С покрытием кода
+poetry run pytest --cov=app --cov-report=html
+
+# Конкретный тест
+poetry run pytest tests/unit/test_todo_entity.py::TestTodoCreation::test_create_valid_todo
+```
+
+### Настройка тестовой БД
+
+Создайте тестовую базу данных:
+
+```bash
+docker exec -it todo_postgres psql -U admin -c "CREATE DATABASE test_db;"
+```
+
+### Покрытие кода
+
+Цель: >80% покрытие
+
+```bash
+poetry run pytest --cov=app --cov-report=term-missing
 ```
 
 ## Разработка
@@ -284,15 +334,15 @@ docker-compose logs -f
 
 Этот проект демонстрирует:
 
-- Async/await везде (FastAPI, SQLAlchemy, PostgreSQL)  
-- Type hints для всех функций и методов  
-- Pydantic v2 для валидации и настроек  
-- Environment-based конфигурация через `.env`  
-- Dependency Injection через FastAPI  
-- Unit of Work с commit/rollback на уровне запроса  
-- Чистая архитектура с разделением слоёв  
-- Repository Pattern для доступа к данным  
-- DTO для разделения API и domain моделей  
+- Async/await везде (FastAPI, SQLAlchemy, PostgreSQL)
+- Type hints для всех функций и методов
+- Pydantic v2 для валидации и настроек
+- Environment-based конфигурация через `.env`
+- Dependency Injection через FastAPI
+- Unit of Work с commit/rollback на уровне запроса
+- Чистая архитектура с разделением слоёв
+- Repository Pattern для доступа к данным
+- DTO для разделения API и domain моделей
 - Alembic для управления миграциями
 
 ## Лицензия
@@ -302,7 +352,6 @@ MIT
 ## Автор
 
 https://stepik.org/a/223717
-
 
 ---
 
