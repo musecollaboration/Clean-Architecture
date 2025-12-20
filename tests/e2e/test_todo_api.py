@@ -10,7 +10,7 @@ class TestTodoAPICreate:
     async def test_create_todo_success(self, client: AsyncClient):
         """Создание задачи возвращает 201 и корректные данные."""
         response = await client.post(
-            "/api/v1/todos",
+            "/api/v1/todos/",
             json={"title": "Buy milk", "description": "From the store"}
         )
 
@@ -26,7 +26,7 @@ class TestTodoAPICreate:
     async def test_create_todo_without_description(self, client: AsyncClient):
         """Создание задачи без описания."""
         response = await client.post(
-            "/api/v1/todos",
+            "/api/v1/todos/",
             json={"title": "Task without description"}
         )
 
@@ -38,7 +38,7 @@ class TestTodoAPICreate:
     async def test_create_todo_empty_title_returns_422(self, client: AsyncClient):
         """Пустой заголовок возвращает 422."""
         response = await client.post(
-            "/api/v1/todos",
+            "/api/v1/todos/",
             json={"title": ""}
         )
 
@@ -47,7 +47,7 @@ class TestTodoAPICreate:
     async def test_create_todo_missing_title_returns_422(self, client: AsyncClient):
         """Отсутствие заголовка возвращает 422."""
         response = await client.post(
-            "/api/v1/todos",
+            "/api/v1/todos/",
             json={"description": "No title"}
         )
 
@@ -56,7 +56,7 @@ class TestTodoAPICreate:
     async def test_create_todo_title_too_long_returns_422(self, client: AsyncClient):
         """Слишком длинный заголовок возвращает 422."""
         response = await client.post(
-            "/api/v1/todos",
+            "/api/v1/todos/",
             json={"title": "a" * 201}
         )
 
@@ -71,7 +71,7 @@ class TestTodoAPIGet:
         """Получение существующей задачи возвращает 200."""
         # Создаём задачу
         create_response = await client.post(
-            "/api/v1/todos",
+            "/api/v1/todos/",
             json={"title": "Test Task"}
         )
         todo_id = create_response.json()["id"]
@@ -105,7 +105,7 @@ class TestTodoAPIList:
 
     async def test_list_empty(self, client: AsyncClient):
         """Пустой список возвращает 200 и []."""
-        response = await client.get("/api/v1/todos")
+        response = await client.get("/api/v1/todos/")
 
         assert response.status_code == 200
         assert response.json() == []
@@ -113,11 +113,11 @@ class TestTodoAPIList:
     async def test_list_multiple_todos(self, client: AsyncClient):
         """Список возвращает все задачи."""
         # Создаём несколько задач
-        await client.post("/api/v1/todos", json={"title": "Task 1"})
-        await client.post("/api/v1/todos", json={"title": "Task 2"})
-        await client.post("/api/v1/todos", json={"title": "Task 3"})
+        await client.post("/api/v1/todos/", json={"title": "Task 1"})
+        await client.post("/api/v1/todos/", json={"title": "Task 2"})
+        await client.post("/api/v1/todos/", json={"title": "Task 3"})
 
-        response = await client.get("/api/v1/todos")
+        response = await client.get("/api/v1/todos/")
 
         assert response.status_code == 200
         data = response.json()
@@ -127,10 +127,10 @@ class TestTodoAPIList:
 
     async def test_list_ordered_by_created_at_desc(self, client: AsyncClient):
         """Задачи отсортированы по дате создания (новые первыми)."""
-        response1 = await client.post("/api/v1/todos", json={"title": "First"})
-        response2 = await client.post("/api/v1/todos", json={"title": "Second"})
+        response1 = await client.post("/api/v1/todos/", json={"title": "First"})
+        response2 = await client.post("/api/v1/todos/", json={"title": "Second"})
 
-        response = await client.get("/api/v1/todos")
+        response = await client.get("/api/v1/todos/")
         data = response.json()
 
         # Вторая задача должна быть первой
@@ -146,7 +146,7 @@ class TestTodoAPIUpdate:
         """Обновление заголовка возвращает 200."""
         # Создаём задачу
         create_response = await client.post(
-            "/api/v1/todos",
+            "/api/v1/todos/",
             json={"title": "Old Title", "description": "Description"}
         )
         todo_id = create_response.json()["id"]
@@ -165,7 +165,7 @@ class TestTodoAPIUpdate:
     async def test_update_todo_description(self, client: AsyncClient):
         """Обновление описания возвращает 200."""
         create_response = await client.post(
-            "/api/v1/todos",
+            "/api/v1/todos/",
             json={"title": "Title"}
         )
         todo_id = create_response.json()["id"]
@@ -192,7 +192,7 @@ class TestTodoAPIUpdate:
     async def test_update_empty_body_returns_422(self, client: AsyncClient):
         """Пустое тело запроса возвращает 422."""
         create_response = await client.post(
-            "/api/v1/todos",
+            "/api/v1/todos/",
             json={"title": "Task"}
         )
         todo_id = create_response.json()["id"]
@@ -210,7 +210,7 @@ class TestTodoAPIComplete:
         """Завершение задачи возвращает 200."""
         # Создаём задачу
         create_response = await client.post(
-            "/api/v1/todos",
+            "/api/v1/todos/",
             json={"title": "Task to complete"}
         )
         todo_id = create_response.json()["id"]
@@ -238,7 +238,7 @@ class TestTodoAPIDelete:
         """Удаление задачи возвращает 204."""
         # Создаём задачу
         create_response = await client.post(
-            "/api/v1/todos",
+            "/api/v1/todos/",
             json={"title": "Task to delete"}
         )
         todo_id = create_response.json()["id"]
@@ -268,7 +268,7 @@ class TestTodoAPIFlow:
         """Полный цикл: создание → получение → обновление → завершение → удаление."""
         # 1. Создание
         create_response = await client.post(
-            "/api/v1/todos",
+            "/api/v1/todos/",
             json={"title": "Learn FastAPI", "description": "Complete tutorial"}
         )
         assert create_response.status_code == 201

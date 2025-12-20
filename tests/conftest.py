@@ -60,7 +60,13 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     """HTTP клиент для E2E тестов с подменой БД."""
 
     async def override_get_db():
-        yield db_session
+        """Переопределённая зависимость БД с коммитом после каждого запроса."""
+        try:
+            yield db_session
+            await db_session.commit()
+        except Exception:
+            await db_session.rollback()
+            raise
 
     app.dependency_overrides[get_db_session] = override_get_db
 
