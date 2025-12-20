@@ -263,7 +263,7 @@ poetry run pytest tests/unit/test_todo_entity.py::TestTodoCreation::test_create_
 Создайте тестовую базу данных:
 
 ```bash
-docker exec -it todo_postgres psql -U admin -c "CREATE DATABASE test_db;"
+docker exec -it todo_postgres_db psql -U admin -d postgres -c "CREATE DATABASE test_db;"
 ```
 
 ### Покрытие кода
